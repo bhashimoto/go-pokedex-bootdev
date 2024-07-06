@@ -3,11 +3,14 @@ package pokeapi
 import (
 	"encoding/json"
 	"errors"
+	"internal/pokecache"
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
+var cache pokecache.Cache = pokecache.NewCache(5 * time.Minute)
 	
 var locationsConfig = config{
 	next: "https://pokeapi.co/api/v2/location-area",
@@ -26,24 +29,31 @@ func GetPreviousLocations() ([]string, error) {
 }
 
 func getLocations(url string, c *config) ([]string, error) {
-	res, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
+	body, found := cache.Get(url)
+
+	if !found {
+		res, err := http.Get(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data, err := io.ReadAll(res.Body)
+		body = data
+		res.Body.Close()
+		cache.Add(url, body)
+		if res.StatusCode > 299 {
+			log.Fatalf("Response failed with status code: %d and \nbody: %s\n", res.StatusCode, body)
+			return []string{}, errors.New("invalid status code")
+		}
+		if err != nil {
+			log.Fatal(err)
+			return []string{}, err
+		}
 	}
 
-	body, err := io.ReadAll(res.Body)
-	res.Body.Close()
-	if res.StatusCode > 299 {
-		log.Fatalf("Response failed with status code: %d and \nbody: %s\n", res.StatusCode, body)
-		return []string{}, errors.New("invalid status code")
-	}
-	if err != nil {
-		log.Fatal(err)
-		return []string{}, err
-	}
 
 	locs := locations{}
-	err = json.Unmarshal(body, &locs)
+	err := json.Unmarshal(body, &locs)
 	if err != nil {
 		log.Fatal(err)
 		return []string{}, err
