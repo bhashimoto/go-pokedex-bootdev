@@ -7,7 +7,7 @@ import (
 )
 
 
-func commandMapb() error {
+func commandMapb(args ...string) error {
 	locations, err := pokeapi.GetPreviousLocations()
 	if err != nil {
 		log.Fatal(err)

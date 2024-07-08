@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func commandMap() error {
+func commandMap(args ...string) error {
 	locations, err := pokeapi.GetNextLocations()
 	if err != nil {
 		log.Fatal(err)

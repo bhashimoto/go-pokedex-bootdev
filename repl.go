@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 
@@ -15,21 +16,22 @@ func runRepl() {
 	for {
 		fmt.Print("Pokedex> ")
 		scanner.Scan()
-		input := scanner.Text()
-		cmd, ok := commands[input]
+		input := strings.Split(scanner.Text(), " ")
+
+		cmd, ok := commands[input[0]]
 		if !ok {
 			fmt.Println("\nInvalid command")
 			continue
 		}
 		
-		cmd.callback()
+		cmd.callback(input[1:]...)
 	}
 }
 
 type cliCommand struct {
 	name		string
 	description	string
-	callback	func() error
+	callback	func(args ...string) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -39,6 +41,7 @@ func getCommands() map[string]cliCommand {
 			name:		"help",
 			description:	"Displays a help message",
 			callback:	commandHelp,
+			
 		},
 		"exit": {
 			name:		"exit",
@@ -54,6 +57,11 @@ func getCommands() map[string]cliCommand {
 			name:		"mapb",
 			description:	"gets the next 20 location areas available",
 			callback:	commandMapb,
+		},
+		"explore": {
+			name:		"explore",
+			description:	"gets the pokemon found in the specified area",
+			callback:	commandExplore,
 		},
 	}
 }

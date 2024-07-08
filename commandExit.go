@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-func commandExit() error {
+func commandExit(args ...string) error {
 	os.Exit(0)
 	return nil
 }
