@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"internal/pokeapi"
-	"log"
 )
 
 func commandExplore(args ...string) error {
@@ -11,7 +10,6 @@ func commandExplore(args ...string) error {
 	pokemons, err := pokeapi.GetLocationPokemons(location)
 
 	if err != nil {
-		log.Fatal(err)
 		return err
 	}
 

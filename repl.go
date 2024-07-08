@@ -24,7 +24,10 @@ func runRepl() {
 			continue
 		}
 		
-		cmd.callback(input[1:]...)
+		err := cmd.callback(input[1:]...)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
@@ -62,6 +65,11 @@ func getCommands() map[string]cliCommand {
 			name:		"explore",
 			description:	"gets the pokemon found in the specified area",
 			callback:	commandExplore,
+		},
+		"catch": {
+			name:		"catch",
+			description:	"tries to catch a pokemon",
+			callback:	commandCatch,
 		},
 	}
 }

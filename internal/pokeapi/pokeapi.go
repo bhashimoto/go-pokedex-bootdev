@@ -5,7 +5,6 @@ import (
 	"errors"
 	"internal/pokecache"
 	"io"
-	"log"
 	"net/http"
 	"time"
 )
@@ -36,7 +35,6 @@ func GetLocationPokemons(area string) ([]string, error) {
 	if !found{
 		res, err := http.Get(url)
 		if err != nil {
-			log.Fatal(err)
 			return []string{}, err
 		}
 
@@ -45,7 +43,6 @@ func GetLocationPokemons(area string) ([]string, error) {
 		res.Body.Close()
 		cache.Add(url, body)
 		if err != nil {
-			log.Fatal(err)
 			return []string{}, err
 		}
 	}
@@ -53,7 +50,6 @@ func GetLocationPokemons(area string) ([]string, error) {
 	details := locationAreaDetails{}
 	err := json.Unmarshal(body, &details)
 	if err != nil {
-		log.Fatal(err)
 		return []string{}, err
 	}
 
@@ -72,7 +68,7 @@ func getLocations(url string, c *config) ([]string, error) {
 	if !found {
 		res, err := http.Get(url)
 		if err != nil {
-			log.Fatal(err)
+			return []string{}, err
 		}
 
 		data, err := io.ReadAll(res.Body)
@@ -80,11 +76,9 @@ func getLocations(url string, c *config) ([]string, error) {
 		res.Body.Close()
 		cache.Add(url, body)
 		if res.StatusCode > 299 {
-			log.Fatalf("Response failed with status code: %d and \nbody: %s\n", res.StatusCode, body)
 			return []string{}, errors.New("invalid status code")
 		}
 		if err != nil {
-			log.Fatal(err)
 			return []string{}, err
 		}
 	}
@@ -93,7 +87,6 @@ func getLocations(url string, c *config) ([]string, error) {
 	locs := locations{}
 	err := json.Unmarshal(body, &locs)
 	if err != nil {
-		log.Fatal(err)
 		return []string{}, err
 	}
 

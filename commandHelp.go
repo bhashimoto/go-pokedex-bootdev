@@ -3,6 +3,6 @@ package main
 import "fmt"
 
 func commandHelp(args ...string) error {
-	fmt.Println("Usage:\n")
+	fmt.Printf("Usage:\n")
 	return nil
 }
