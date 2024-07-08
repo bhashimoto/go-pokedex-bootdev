@@ -2,6 +2,7 @@ package pokeapi
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 )
@@ -31,6 +32,15 @@ func GetPokemonData(pokemonName string) (Pokemon, error) {
 	}
 
 	return pokemon, nil
+}
+
+func (p Pokemon) GetStat(statName string) (int, error) {
+	for _, stat := range p.Stats {
+		if stat.Stat.Name == statName {
+			return stat.BaseStat, nil
+		}
+	}
+	return 0, errors.New("invalid stat")
 }
 
 type Pokemon struct {
@@ -289,6 +299,7 @@ type Pokemon struct {
 	Stats []struct {
 		BaseStat int `json:"base_stat"`
 		Effort   int `json:"effort"`
+
 		Stat     struct {
 			Name string `json:"name"`
 			URL  string `json:"url"`
